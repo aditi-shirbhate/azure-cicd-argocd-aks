@@ -1,0 +1,65 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+ paths:
+   include:
+     - worker/*
+
+resources:
+- repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: '9ba1a8dc-c2c5-413a-8f08-1fbf8423b0a3'
+  imageRepository: 'household'
+  containerRegistry: 'dockerimageregistry98.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/result/Dockerfile'
+  tag: '$(Build.BuildId)'
+
+pool:
+ name: 'AzureAgent'
+
+stages:
+- stage: Build
+  displayName: Build
+  jobs:
+  - job: Build
+    displayName: Build
+    steps:
+    - task: Docker@2
+      displayName: Build 
+      inputs:
+        containerRegistry: '$(dockerRegistryServiceConnection)'
+        repository: '$(imageRepository)'
+        command: 'build'
+        Dockerfile: 'result/Dockerfile'
+        tags: '$(tag)'
+- stage: Push
+  displayName: Push
+  jobs:
+  - job: Push
+    displayName: Push
+    steps:
+    - task: Docker@2
+      displayName: Push
+      inputs:
+        containerRegistry: '$(dockerRegistryServiceConnection)'
+        repository: '$(imageRepository)'
+        command: 'push'
+        tags: '$(tag)'
+- stage: Update
+  displayName: Update Stage
+  jobs:
+  - job: Update
+    displayName: Update
+    steps:
+    - script: |
+        sed -i 's/\r//' scripts/updateK8sManifests.sh
+        chmod +x scripts/updateK8sManifests.sh
+      displayName: 'Fix line endings'
+    - task: ShellScript@2
+      inputs:
+        scriptPath: 'scripts/updateK8sManifests.sh'
+        args: 'vote $(imageRepository) $(tag)'
