@@ -48,13 +48,15 @@ ArgoCD watches the repo. When `updateK8sManifests.sh` commits the new image tag 
 ## 📸 Screenshots
 
 ### ArgoCD — Application Tree (Healthy & Synced)
-![ArgoCD Tree](screenshots/argocd-tree.png)
+![ArgoCD Tree](screenshots/Argo-CD%201.png)
+
+![ArgoCD Vote](screenshots/Argo%20CD%202.png)
 
 ### Azure DevOps — All Pipelines Green
-![Pipelines](screenshots/pipelines.png)
+![Pipelines](screenshots/Pipeline_page.png)
 
 ### ACR — Image Tags
-![ACR Tags](screenshots/acr-tags.png)
+![ACR Tags](screenshots/Container-Registry-Images.png)
 
 ### Vote App — Live
-![Vote App](screenshots/vote-app.png)
+![Vote App](screenshots/Voting_page.png)
